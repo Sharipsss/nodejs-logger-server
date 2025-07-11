@@ -8,8 +8,8 @@ const HOST = '209.38.199.154';
 const PORT = 443;
 
 // SSL certificates paths
-const SSL_KEY = './key.pem';
-const SSL_CERT = './cert.pem';
+const SSL_KEY = '/etc/letsencrypt/live/appstoreredteam.uz/privkey.pem';
+const SSL_CERT = '/etc/letsencrypt/live/appstoreredteam.uz/fullchain.pem';
 
 // Create a simple request logger
 function logRequest(req) {
