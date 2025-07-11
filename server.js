@@ -82,6 +82,28 @@ function logError(error, requestId, targetHost) {
     writeLog(logMessage);
 }
 
+// Allowed endpoints configuration
+const ALLOWED_HOST = 'incall.changan.com.cn';
+const ALLOWED_ENDPOINTS = [
+    '/hu-apigw/evhu/api/vehicleDrivingMode/getVehicleDrivingMode',
+    '/api/hu/2.0/getHost'
+];
+
+// Check if request is allowed to be forwarded
+function isRequestAllowed(targetHost, requestUrl) {
+    // Check if host is allowed
+    if (targetHost !== ALLOWED_HOST) {
+        return false;
+    }
+    
+    // Parse URL to get pathname without query parameters
+    const parsedUrl = url.parse(requestUrl);
+    const pathname = parsedUrl.pathname;
+    
+    // Check if endpoint is in allowed list
+    return ALLOWED_ENDPOINTS.some(endpoint => pathname.startsWith(endpoint));
+}
+
 // Forward request to target server
 function forwardRequest(req, res, requestBody, requestId) {
     const targetHost = req.headers.host;
@@ -89,6 +111,21 @@ function forwardRequest(req, res, requestBody, requestId) {
     if (!targetHost) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'No host header provided' }));
+        return;
+    }
+
+    // Check if request is allowed to be forwarded
+    if (!isRequestAllowed(targetHost, req.url)) {
+        const errorMessage = `[ID: ${requestId}] Request not allowed - Host: ${targetHost}, URL: ${req.url}`;
+        writeLog(errorMessage);
+        
+        res.writeHead(403, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ 
+            error: 'Forbidden', 
+            message: `Forwarding not allowed for host: ${targetHost} and endpoint: ${req.url}`,
+            allowedHost: ALLOWED_HOST,
+            allowedEndpoints: ALLOWED_ENDPOINTS
+        }));
         return;
     }
 
