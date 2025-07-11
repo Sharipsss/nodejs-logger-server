@@ -1,0 +1,14 @@
+{
+  "name": "nodejs-logger-server",
+  "version": "1.0.0",
+  "description": "Simple HTTPS Node.js server that logs all requests",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["nodejs", "https", "logger", "server"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {}
+}
