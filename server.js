@@ -101,7 +101,8 @@ function forwardRequest(req, res, requestBody, requestId) {
         port: 443, // Assuming HTTPS for the target
         path: req.url,
         method: req.method,
-        headers: { ...req.headers }
+        headers: { ...req.headers },
+        rejectUnauthorized: false // Ignore SSL certificate errors
     };
 
     // Remove host-specific headers that might cause issues
